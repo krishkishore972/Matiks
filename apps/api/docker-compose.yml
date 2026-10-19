@@ -1,0 +1,25 @@
+# Postgres for the Matiks recreation server.
+#
+# The host port is 55432 rather than 5432 on purpose: developers usually already
+# have a Postgres on 5432 and this compose file must never disturb it.
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: matiks-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: matiks
+      POSTGRES_PASSWORD: matiks
+      POSTGRES_DB: matiks
+    ports:
+      - "55432:5432"
+    volumes:
+      - matiks-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U matiks -d matiks"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  matiks-pgdata:

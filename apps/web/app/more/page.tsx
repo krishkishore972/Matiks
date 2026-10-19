@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { Button, Card, InfoNote, Pill, ProgressBar, SectionTitle, StateBlock } from "../../components/ui";
 import { Icon } from "../../components/icons";
+import { isServerBacked } from "../../lib/services/backend";
 import { usePlayer } from "../../lib/state/player";
 import { formatPercent } from "../../lib/utils/cn";
 
 const LINKS = [
   { href: "/profile", label: "Profile & statistics", icon: "User", hint: "Ratings, history, insights" },
   { href: "/leaderboard", label: "Leaderboards", icon: "Trophy", hint: "Global, friends, college" },
-  { href: "/store", label: "Snacc store", icon: "Store", hint: "Pies, shields, boosters" },
+  { href: "/store", label: "Pi Store", icon: "Store", hint: "Pies, shields, boosters" },
   { href: "/puzzles", label: "Puzzles", icon: "Puzzle", hint: "Daily and infinite" },
   { href: "/compete", label: "Compete", icon: "Swords", hint: "Duels and contests" },
   { href: "/quests", label: "Quests", icon: "Target", hint: "Daily objectives" },
@@ -80,8 +81,9 @@ export default function MorePage() {
           out in docs/reference-analysis.md.
         </InfoNote>
         <InfoNote icon="Users">
-          Duels and leaderboards use simulated opponents because there is no server. They are labelled as
-          simulated everywhere they appear.
+          {isServerBacked()
+            ? "Sprint, Fastest Finger and DMAS duel real players through the game server; when nobody is waiting, the server seats the AlphaBot, and those rows stay labelled. Other modes practise against a labelled simulated rival."
+            : "Duels and leaderboards use simulated opponents because no game server is configured. They are labelled as simulated everywhere they appear."}
         </InfoNote>
         <Button variant="danger" fullWidth icon="RotateCcw" onClick={() => void reset()}>
           Reset local progress

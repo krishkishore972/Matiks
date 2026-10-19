@@ -1,0 +1,24 @@
+{
+  "name": "@repo/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./rng": "./src/rng.ts",
+    "./types": "./src/types.ts",
+    "./scoring": "./src/scoring.ts",
+    "./quests": "./src/quests.ts",
+    "./catalog": "./src/catalog.ts",
+    "./economy": "./src/economy.ts",
+    "./leaderboard": "./src/leaderboard.ts",
+    "./protocol": "./src/protocol.ts"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "typescript": "7.0.2"
+  }
+}

@@ -31,6 +31,8 @@ import {
 import { usePlayer } from "../lib/state/player";
 import type { BlitzShape, Difficulty, GameId, GameResult } from "../lib/types";
 import { cn, formatDuration, formatPercent } from "../lib/utils/cn";
+import { isServerBacked } from "../lib/services/backend";
+import { LiveDuel } from "./LiveDuel";
 import { ArithmeticDuel } from "./games/ArithmeticDuel";
 import { CrossMathBoard } from "./games/CrossMathBoard";
 import { FlashAnzanDuel } from "./games/FlashAnzanDuel";
@@ -71,6 +73,13 @@ type ActivePuzzle =
   | { game: "wend"; data: WendPuzzle };
 
 const DAILY_DIFFICULTY_GAMES: GameId[] = ["sudoku", "kenken", "crossmath", "mathmaze", "hectoc"];
+
+/**
+ * Modes the server can referee question-by-question. The memory duels generate
+ * their boards on-device, so they stay practice-only until that generation moves
+ * behind the API as well.
+ */
+const LIVE_DUEL_IDS: GameId[] = ["sprint", "fastestfinger", "dmas"];
 
 /**
  * Blitz duels run 60 seconds and are read as three 20-second windows. The
@@ -125,9 +134,11 @@ export function GameHost({ gameId, daily = false }: { gameId: GameId; daily?: bo
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [shape, setShape] = useState<{ shape: BlitzShape; note: string; lead: number } | null>(null);
+  const [live, setLive] = useState(false);
   const windowMarks = useRef<number[]>([]);
 
   const isDuel = !meta.daily && !["queens", "tango", "zip", "pipes", "wend"].includes(gameId);
+  const canPlayLive = LIVE_DUEL_IDS.includes(gameId) && isServerBacked();
 
   const opponent = useMemo(
     () => (isDuel ? simulateOpponent(gameId) : null),
@@ -264,6 +275,10 @@ export function GameHost({ gameId, daily = false }: { gameId: GameId; daily?: bo
     return <StateBlock state="loading" title="Warming up" message="Preparing your session…" />;
   }
 
+  if (live) {
+    return <LiveDuel gameId={gameId} onExit={() => setLive(false)} />;
+  }
+
   const playing = session.status === "playing";
 
   return (
@@ -338,14 +353,26 @@ export function GameHost({ gameId, daily = false }: { gameId: GameId; daily?: bo
 
           {opponent ? (
             <InfoNote icon="Info">
-              Your rival here is simulated ({opponent.name}, rating {opponent.rating}) because this build has
-              no game server. The result is still scored and saved locally.
+              {canPlayLive
+                ? `Practice alone uses a simulated rival (${opponent.name}, rating ${opponent.rating}). Choose "Find a live opponent" to duel a real player through the game server.`
+                : `Your rival here is simulated (${opponent.name}, rating ${opponent.rating}) because this mode's board is generated on-device. The result is still scored and saved.`}
             </InfoNote>
           ) : null}
 
-          <Button fullWidth icon="Play" onClick={start}>
-            {session.mistakes > 0 || session.elapsedMs > 0 ? "Start again" : "Start"}
-          </Button>
+          {canPlayLive ? (
+            <>
+              <Button fullWidth icon="Users" onClick={() => setLive(true)}>
+                Find a live opponent
+              </Button>
+              <Button fullWidth variant="secondary" icon="Play" onClick={start}>
+                Practice alone
+              </Button>
+            </>
+          ) : (
+            <Button fullWidth icon="Play" onClick={start}>
+              {session.mistakes > 0 || session.elapsedMs > 0 ? "Start again" : "Start"}
+            </Button>
+          )}
         </Card>
       ) : null}
 

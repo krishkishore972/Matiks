@@ -201,15 +201,15 @@ export default function HomePage() {
           )}
           {playerRank ? (
             <p className="text-[11px] text-ink-400">
-              You are #{playerRank} today. Rows marked “bot” are simulated practice rivals — there is no live
-              server in this build.
+              You are #{playerRank} today. Rows marked “bot” are the AlphaBot roster; rows without the badge
+              are real players.
             </p>
           ) : null}
         </Card>
       </section>
 
       <section className="animate-rise space-y-2">
-        <SectionTitle title="Snacc" href="/store" actionLabel="Open store" />
+        <SectionTitle title="Pi Store" href="/store" actionLabel="Open store" />
         <InfoNote icon="Gift">
           Streak shields, Snacc skips and XP boosters are bought with Pies, the soft currency earned by
           finishing boards above the minimum score.

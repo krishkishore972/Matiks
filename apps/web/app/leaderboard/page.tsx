@@ -5,6 +5,7 @@ import { InfoNote, Pill, SectionTitle, StateBlock } from "../../components/ui";
 import { cn } from "../../lib/utils/cn";
 import {
   getBackend,
+  isServerBacked,
   type Backend,
 } from "../../lib/services/backend";
 import {
@@ -123,8 +124,9 @@ export default function LeaderboardPage() {
       )}
 
       <InfoNote icon="Info">
-        There is no leaderboard server in this build. Every row that is not you is generated deterministically
-        and is marked “bot”; your own row uses your real local stats.
+        {isServerBacked()
+          ? "Rankings come from every recorded play on the game server. Rows with a “bot” badge are the seeded AlphaBot roster; the rest are real accounts. Friends shows only real accounts, because the artifact has no friend graph to recover."
+          : "There is no leaderboard server configured. Every row that is not you is generated deterministically and is marked “bot”; your own row uses your real local stats."}
       </InfoNote>
     </div>
   );

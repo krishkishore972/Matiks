@@ -8,14 +8,13 @@ import { PUZZLE_TABS, todayKey } from "../../lib/services/backend";
 import { usePlayer } from "../../lib/state/player";
 
 export default function DailyPage() {
-  const { bundle, loading, error, purchase } = usePlayer();
+  const { bundle, loading, error } = usePlayer();
 
   if (loading) return <StateBlock state="loading" title="Loading today's challenge" />;
   if (error || !bundle) return <StateBlock state="error" message={error ?? "No player data."} />;
 
   const done = bundle.daily.completed;
   const complete = done.length === PUZZLE_TABS.daily.length;
-  const skips = bundle.wallet.skips;
 
   return (
     <div className="space-y-6">
@@ -43,17 +42,6 @@ export default function DailyPage() {
         </div>
         <div className="mt-3">
           <ProgressBar value={done.length / PUZZLE_TABS.daily.length} label="Daily progress" />
-        </div>
-        <div className="mt-3 flex items-center gap-2 text-[11px] text-ink-300">
-          <Icon name="SkipForward" className="h-3.5 w-3.5 text-lime-brand" />
-          Snacc Skips held: {skips}
-          <button
-            type="button"
-            onClick={() => void purchase("snacc-skip")}
-            className="ml-auto rounded-full bg-ink-800 px-3 py-1 font-semibold text-ink-100 hover:bg-ink-700"
-          >
-            Buy a skip (120 Pies)
-          </button>
         </div>
       </Card>
 

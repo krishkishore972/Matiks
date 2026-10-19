@@ -30,10 +30,14 @@ This distinction is maintained everywhere in the codebase and UI.
 **Evidenced directly from the artifact**
 
 - Navigation model and screen names: Arena, Compete, Feed, Puzzles, Quests,
-  Nets, Snacc, More.
+  Nets, **Snacc**, More. Two of these are easy to misread and the bundle settles
+  both: **Snacc is the Infinite Puzzle ladder** ("Solve an endless stream of
+  puzzles at your own pace. No timers, no pressure."), and **Nets is Practice**
+  (`nets.*`, `LearnPracticeSession`). The shop is the **Pi Store**, not Snacc.
 - Daily Challenge puzzle set (Sudoku, KenKen, Cross Math, Math Maze, Hectoc) and
   the league divisions (1st 2000+, 2nd 1200+, 3rd 800+).
-- Infinite Puzzle ladder: Queens, Tango, Zip, Patches, Pipes, Flip Match, Wend.
+- Infinite Puzzle ladder (Snacc): Queens, Tango, Zip, Patches, Pipes, Flip
+  Match, Wend. Skips are a daily-limited currency (`snaccSkips`).
 - Per-mode how-to-play copy, quoted verbatim in `lib/catalog.ts` and shipped in
   the game "how to play" panels (e.g. KenKen cages, Cross Math's "No BODMAS
   here", Hectoc's "six given digits … equal to 100", Zip's checkpoint rule,
@@ -44,7 +48,9 @@ This distinction is maintained everywhere in the codebase and UI.
   Ability Duels' "squares … give the target number" and "space to separate").
 - Duels run 60 seconds in three 20-second windows.
 - Contests by name: 80 in 8, Survival Saturday (+3s for a correct answer, −20s
-  for a mistake), Speed Run, Road to Kolkata.
+  for a mistake), **Sumday Showdown**, Speed Run, Road to Kolkata, and the Pro
+  **75 Smart** habit ladder. Formats: 1v1 Duels, Daily Challenges, Weekly
+  Contests, across four categories — **Math, Memory, Puzzle, Classical**.
 - Minimum score for a play to count: Mind Snap 60, Flash Anzan 90, Sprint 10,
   Ability Duels (Sum of Squares) 8, Fastest Finger 5, Cross Math 4, Math Maze 4,
   KenKen 2, Sudoku 2.
@@ -79,6 +85,8 @@ This distinction is maintained everywhere in the codebase and UI.
 | Flash Anzan points | `terms × 10` per correct round, which reconciles with the min score of 90 | `components/games/FlashAnzanDuel.tsx` |
 | Board-size/difficulty ladders | Sudoku 9×9; KenKen 4–6; Cross Math 3/5; Math Maze rows by difficulty; Queens/Tango/Zip/Pipes/Wend from their generators | `lib/games/*` |
 | Streak-shield consumption | A held shield absorbs one missed day | `lib/services/backend.ts` |
+| Pies payout | Only paid when a play beats the mode minimum, matching the store copy | `lib/services/backend.ts` |
+| Snacc skip price | 120 Pies each, with a fresh set of free skips daily | `lib/services/backend.ts` |
 
 ## 3. Architecture of the web build
 
@@ -117,8 +125,10 @@ Two design decisions matter:
 - **Puzzle ladder sizes and the exact criteria that unlock harder presets** are
   not recoverable from the strings, so difficulty is user-selected for the five
   daily puzzle types and fixed for the infinite ladder.
-- **Feed and Nets** exist as named destinations in the reference app but their
-  content could not be pinned down from the extracted strings; the web build
-  folds them into Home/More rather than inventing a social graph.
+- **Feed and Nets** exist as named destinations in the reference app, but Feed's
+  content is not recoverable and Nets is a practice preset builder; the web build
+  folds both into Home/More rather than inventing a social graph or a second
+  practice engine. Snacc, by contrast, *is* recovered — it is the endless puzzle
+  ladder, so it lives under Puzzles with its skips.
 - **Original assets are not redistributed.** The wordmark is set in type, icons
   come from Lucide, and colours were sampled from the artifact.

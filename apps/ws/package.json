@@ -1,0 +1,30 @@
+{
+  "name": "@repo/ws",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "smoke": "node scripts/duel-smoke.mjs",
+    "test": "vitest run",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint --max-warnings 0"
+  },
+  "dependencies": {
+    "@repo/core": "workspace:*",
+    "@repo/server": "workspace:*",
+    "ws": "^8.18.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "26.4.1",
+    "@types/ws": "^8.5.13",
+    "eslint": "10.9.1",
+    "tsx": "^4.19.2",
+    "typescript": "7.0.2",
+    "vitest": "^5.0.5"
+  }
+}

@@ -19,7 +19,7 @@ export default function StorePage() {
     return () => window.clearInterval(id);
   }, []);
 
-  if (loading) return <StateBlock state="loading" title="Opening the Snacc store" />;
+  if (loading) return <StateBlock state="loading" title="Opening the Pi Store" />;
   if (error || !bundle) return <StateBlock state="error" message={error ?? "No player data."} />;
 
   async function buy(itemId: string, name: string, cost: number) {
@@ -39,7 +39,7 @@ export default function StorePage() {
   return (
     <div className="space-y-6">
       <section>
-        <h1 className="text-2xl font-black tracking-tight text-ink-50">Snacc</h1>
+        <h1 className="text-2xl font-black tracking-tight text-ink-50">Pi Store</h1>
         <p className="mt-1 text-xs text-ink-400">
           Spend Pies — the soft currency you earn by finishing boards above the minimum score.
         </p>
@@ -93,8 +93,9 @@ export default function StorePage() {
       </section>
 
       <InfoNote icon="Info">
-        Pies, Statik Coins, Snacc Skips, the XP Booster and Streak Shields are all named in the shipped app.
-        Statik Coins are a hard-currency premium item and are therefore not purchasable in this offline build.
+        Pies, Statik Coins, Snacc Skips, the XP Booster and Streak Shields are all named in the shipped
+        app. Snacc Skips are spent in Snacc, the endless puzzle ladder — not here. Statik Coins are a
+        hard-currency premium item and are therefore not purchasable in this offline build.
       </InfoNote>
     </div>
   );

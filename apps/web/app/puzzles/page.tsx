@@ -1,12 +1,13 @@
 "use client";
 
 import { Card, GameTile, InfoNote, Pill, ProgressBar, SectionTitle, StateBlock } from "../../components/ui";
+import { Icon } from "../../components/icons";
 import { DUEL_IDS, GAMES } from "../../lib/catalog";
 import { PUZZLE_TABS } from "../../lib/services/backend";
 import { usePlayer } from "../../lib/state/player";
 
 export default function PuzzlesPage() {
-  const { bundle, loading, error } = usePlayer();
+  const { bundle, loading, error, purchase } = usePlayer();
 
   if (loading) return <StateBlock state="loading" title="Loading puzzles" />;
   if (error || !bundle) return <StateBlock state="error" message={error ?? "No player data."} />;
@@ -42,7 +43,10 @@ export default function PuzzlesPage() {
       </section>
 
       <section className="animate-rise">
-        <SectionTitle title="Infinite ladder" actionLabel="" />
+        <SectionTitle title="Snacc" actionLabel="" />
+        <p className="mb-3 text-xs text-ink-400">
+          Solve an endless stream of puzzles at your own pace. No timers, no pressure.
+        </p>
         <div className="grid grid-cols-3 gap-3">
           {PUZZLE_TABS.infinite.map((id) => (
             <GameTile
@@ -55,6 +59,21 @@ export default function PuzzlesPage() {
             />
           ))}
         </div>
+        <div className="mt-3 flex items-center gap-2 text-[11px] text-ink-300">
+          <Icon name="SkipForward" className="h-3.5 w-3.5 text-lime-brand" />
+          Snacc skips held: {bundle.wallet.skips}
+          <button
+            type="button"
+            onClick={() => void purchase("snacc-skip")}
+            className="ml-auto rounded-full bg-ink-800 px-3 py-1 font-semibold text-ink-100 hover:bg-ink-700"
+          >
+            Buy a skip (120 Pies)
+          </button>
+        </div>
+        <p className="mt-2 text-[11px] text-ink-500">
+          Don&apos;t feel like solving the puzzle? You can always skip by swiping up. You can skip only
+          a limited number of puzzles per day; free skips reset tomorrow.
+        </p>
       </section>
 
       <section className="animate-rise">

@@ -12,6 +12,7 @@
     "check-types": "next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@repo/core": "workspace:*",
     "@repo/ui": "workspace:*",
     "@tailwindcss/postcss": "^4.3.3",
     "clsx": "^2.1.1",

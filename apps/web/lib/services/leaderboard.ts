@@ -6,25 +6,16 @@
  * says so explicitly. When a real backend exists, replace `buildRoster` with a
  * fetch and the rest of the app does not change.
  */
+import type { LeaderboardCategory } from "@repo/core/leaderboard";
 import { createRng, seedFromString } from "../rng";
 import type { LeaderboardEntry, LeaderboardScope, PlayerProfile, PlayerStats } from "../types";
 
-/** `leaderboard.category.labels.*` from the shipped bundle. */
-export type LeaderboardCategory = "blitz" | "classical" | "memory" | "puzzle" | "xp";
-
-export const LEADERBOARD_CATEGORIES: Array<{ id: LeaderboardCategory; label: string }> = [
-  { id: "blitz", label: "Blitz" },
-  { id: "classical", label: "Classical" },
-  { id: "memory", label: "Memory" },
-  { id: "puzzle", label: "Puzzle" },
-  { id: "xp", label: "XP" },
-];
-
-export const LEADERBOARD_SCOPES: Array<{ id: LeaderboardScope; label: string }> = [
-  { id: "global", label: "Global" },
-  { id: "friends", label: "Friends" },
-  { id: "college", label: "College" },
-];
+export {
+  CATEGORY_GAMES,
+  LEADERBOARD_CATEGORIES,
+  LEADERBOARD_SCOPES,
+} from "@repo/core/leaderboard";
+export type { LeaderboardCategory } from "@repo/core/leaderboard";
 
 const HANDLES = [
   "aarav","nisha","dev","tanvi","kabir","meera","ishaan","riya","arjun","zoya",

@@ -1,0 +1,38 @@
+{
+  "name": "@repo/server",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./env": "./src/env.ts",
+    "./db": "./src/db/client.ts",
+    "./db/schema": "./src/db/schema.ts",
+    "./db/repo": "./src/db/repo.ts",
+    "./db/migrate": "./src/db/migrate.ts",
+    "./domain/questions": "./src/domain/questions.ts",
+    "./domain/stream": "./src/domain/stream.ts",
+    "./domain/duel": "./src/domain/duel.ts",
+    "./domain/matchmaking": "./src/domain/matchmaking.ts"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "lint": "eslint --max-warnings 0",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@repo/core": "workspace:*",
+    "drizzle-orm": "1.0.0-rc.4",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "26.4.1",
+    "@types/pg": "^8.23.1",
+    "eslint": "10.9.1",
+    "tsx": "^4.19.2",
+    "typescript": "7.0.2",
+    "vitest": "^5.0.5"
+  }
+}

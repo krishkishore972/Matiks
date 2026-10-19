@@ -11,9 +11,10 @@ import { Icon } from "./icons";
  * Navigation model.
  *
  * The shipped app has a deep bottom bar (Arena / Compete / Feed / Puzzles /
- * Quests / Nets / Snacc / More). The web recreation keeps the five destinations
- * that carry real functionality here, and folds Feed, Nets and Snacc into
- * Home / More and a dedicated /store route. See docs/reference-analysis.md.
+ * Quests / Nets / Snacc / More). The web recreation keeps the five that carry
+ * real functionality here — Snacc lives under Puzzles, since it is the endless
+ * puzzle ladder — and folds Feed and Nets into Home, More and the Pi Store.
+ * See docs/reference-analysis.md.
  */
 const TABS = [
   { href: "/", label: "Arena", icon: "Home" },

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button, Card, InfoNote, Pill, SectionTitle, StatBlock, StateBlock } from "../../components/ui";
 import { GAMES } from "../../lib/catalog";
+import { isServerBacked } from "../../lib/services/backend";
 import { usePlayer } from "../../lib/state/player";
 import { QUALITY_BAND_LABEL, qualityBand } from "../../lib/scoring";
 import { formatDuration, formatPercent } from "../../lib/utils/cn";
@@ -27,7 +28,11 @@ export default function ProfilePage() {
     <div className="space-y-6">
       <section>
         <h1 className="text-2xl font-black tracking-tight text-ink-50">Profile</h1>
-        <p className="mt-1 text-xs text-ink-400">Everything you have played, stored locally in this browser.</p>
+        <p className="mt-1 text-xs text-ink-400">
+          {isServerBacked()
+            ? "Everything you have played, stored on the game server."
+            : "Everything you have played, stored locally in this browser."}
+        </p>
       </section>
 
       <Card className="space-y-3">

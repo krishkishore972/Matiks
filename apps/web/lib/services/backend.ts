@@ -10,6 +10,15 @@
  * simulated surface is labelled in the UI. Nothing here pretends to be a live
  * opponent.
  */
+import {
+  MAX_SHIELDS,
+  STORE_ITEMS,
+  XP_BOOSTER_MS,
+  levelFromXp,
+  todayKey,
+  yesterdayKey,
+} from "@repo/core/economy";
+import type { LevelInfo } from "@repo/core/economy";
 import { DAILY_PUZZLE_IDS, DUEL_IDS, GAMES, INFINITE_PUZZLE_IDS } from "../catalog";
 import { createRng, seedFromString } from "../rng";
 import { countsForProgress, qualityBand, ratingDelta, xpFor } from "../scoring";
@@ -31,6 +40,7 @@ import {
   buildRoster,
   type LeaderboardCategory,
 } from "./leaderboard";
+import { HttpBackend } from "./httpBackend";
 import {
   applyResultToCounters,
   emptyCounters,
@@ -41,7 +51,6 @@ import {
 import { readJson, remove, writeJson } from "./storage";
 
 const STORAGE_KEY = "matiks:v1:state";
-const DAY_MS = 86_400_000;
 
 /* ------------------------------------------------------------------ state -- */
 
@@ -73,13 +82,6 @@ export interface ProfileBundle {
   pies: number;
 }
 
-export interface LevelInfo {
-  level: number;
-  intoLevel: number;
-  levelSpan: number;
-  progress: number;
-}
-
 export interface RecordRequest {
   result: GameResult;
   /** Opponent score for duel results (drives the Elo-style delta). */
@@ -108,14 +110,6 @@ export interface RecordOutcome {
   dualedOpponentScore: number | null;
 }
 
-export interface StoreItem {
-  id: string;
-  name: string;
-  description: string;
-  cost: number;
-  icon: string;
-}
-
 export interface PurchaseResult {
   ok: boolean;
   reason?: "insufficient" | "maxed" | "already-owned";
@@ -137,48 +131,22 @@ export interface Backend {
 
 /* ------------------------------------------------------------- helpers ---- */
 
-export function todayKey(date = new Date()): string {
-  const year = date.getFullYear();
-  const month = `${date.getMonth() + 1}`.padStart(2, "0");
-  const day = `${date.getDate()}`.padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
-export function yesterdayKey(date = new Date()): string {
-  return todayKey(new Date(date.getTime() - DAY_MS));
-}
-
-/** Daily boards are seeded from the date key so everybody sees the same board. */
-export function dailySeed(dayKey: string, gameId: GameId): string {
-  return `daily:${dayKey}:${gameId}`;
-}
-
-/** Practice boards rotate on a per-session counter so they are always new. */
-export function practiceSeed(gameId: GameId, nonce: number): string {
-  const day = todayKey();
-  return `practice:${day}:${gameId}:${nonce}`;
-}
-
-export const XP_BOOSTER_MS = 15 * 60 * 1000;
-export const STREAK_SHIELD_COST = 200;
-export const MAX_SHIELDS = 2;
-
-/** Level curve: level n costs 250·n XP. Inferred, not recovered. */
-export function levelFromXp(xp: number): LevelInfo {
-  let level = 1;
-  let remaining = xp;
-  while (remaining >= 250 * level && level < 999) {
-    remaining -= 250 * level;
-    level += 1;
-  }
-  const span = 250 * level;
-  return {
-    level,
-    intoLevel: remaining,
-    levelSpan: span,
-    progress: span > 0 ? Math.min(1, remaining / span) : 0,
-  };
-}
+/**
+ * Day keys, seeds, the level curve and the store are shared with the server so
+ * a play is scored the same way in both places. See `packages/core`.
+ */
+export {
+  MAX_SHIELDS,
+  STORE_ITEMS,
+  STREAK_SHIELD_COST,
+  XP_BOOSTER_MS,
+  dailySeed,
+  levelFromXp,
+  practiceSeed,
+  todayKey,
+  yesterdayKey,
+} from "@repo/core/economy";
+export type { LevelInfo, StoreItem } from "@repo/core/economy";
 
 function defaultState(): PersistedState {
   const now = new Date().toISOString();
@@ -241,29 +209,6 @@ function loadState(): PersistedState {
 
 /* ------------------------------------------------------------- backend ---- */
 
-export const STORE_ITEMS: StoreItem[] = [
-  {
-    id: "streak-shield",
-    name: "Streak Shield",
-    description: "Protects your streak if you miss a day. Holds a maximum of 2.",
-    cost: STREAK_SHIELD_COST,
-    icon: "Shield",
-  },
-  {
-    id: "snacc-skip",
-    name: "Snacc Skip",
-    description: "Skips one Daily Challenge puzzle without breaking the run.",
-    cost: 120,
-    icon: "SkipForward",
-  },
-  {
-    id: "xp-booster",
-    name: "XP Booster",
-    description: "Double XP for the next 15 minutes of play.",
-    cost: 150,
-    icon: "Zap",
-  },
-];
 
 class LocalBackend implements Backend {
   private state: PersistedState;
@@ -507,9 +452,23 @@ class LocalBackend implements Backend {
 
 let backend: Backend | null = null;
 
+/**
+ * The one place the app chooses between the server and local storage.
+ *
+ * `NEXT_PUBLIC_API_URL` is read at build time by Next, so an unset value is a
+ * deliberate "run this offline" switch rather than a runtime surprise.
+ */
 export function getBackend(): Backend {
-  if (!backend) backend = new LocalBackend();
+  if (!backend) {
+    const api = process.env.NEXT_PUBLIC_API_URL;
+    backend = api ? new HttpBackend(api) : new LocalBackend();
+  }
   return backend;
+}
+
+/** True when the app is talking to `apps/api` rather than local storage. */
+export function isServerBacked(): boolean {
+  return Boolean(process.env.NEXT_PUBLIC_API_URL);
 }
 
 export function resetBackend(): void {

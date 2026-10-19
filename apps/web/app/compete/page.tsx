@@ -5,6 +5,7 @@ import { Card, InfoNote, Pill, SectionTitle, StateBlock } from "../../components
 import { Icon } from "../../components/icons";
 import { DUEL_IDS, GAMES } from "../../lib/catalog";
 import { simulateOpponent } from "../../lib/services/backend";
+import { isServerBacked } from "../../lib/services/backend";
 import { usePlayer } from "../../lib/state/player";
 
 /**
@@ -61,7 +62,9 @@ export default function CompetePage() {
       <section>
         <h1 className="text-2xl font-black tracking-tight text-ink-50">Compete</h1>
         <p className="mt-1 text-xs text-ink-400">
-          Every duel runs for 60 seconds against a simulated rival, because this build has no game server.
+          {isServerBacked()
+            ? "Every duel runs for 60 seconds. Sprint, Fastest Finger and DMAS can be played live against another player; the rest practise against a simulated rival."
+            : "Every duel runs for 60 seconds against a simulated rival, because no game server is configured."}
         </p>
       </section>
 
