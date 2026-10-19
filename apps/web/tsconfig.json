@@ -6,7 +6,17 @@
         "name": "next"
       }
     ],
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    // The puzzle engines index fixed-size board arrays constantly (grid[row * size + col]).
+    // Under `noUncheckedIndexedAccess` (set by the shared base config) every read becomes
+    // `T | undefined`, which would force hundreds of non-null assertions for provably
+    // in-range indices. Bounds are enforced by the generators, so the extra friction buys
+    // nothing here.
+    "noUncheckedIndexedAccess": false,
+    // ESLint here parses with babel and therefore cannot see type-only usages,
+    // which makes its unused-variable rule useless for this project. The compiler
+    // does have the type information, so it owns this check instead.
+    "noUnusedLocals": true
   },
   "include": [
     "**/*.ts",
